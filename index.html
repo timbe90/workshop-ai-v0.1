@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>Workshop AI</title>
+  <style>
+    body {
+      background: #111827;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { color: #facc15; }
+    input, select, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 14px;
+      margin: 7px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #facc15;
+      color: #111827;
+      font-weight: bold;
+    }
+    .card {
+      background: #1f2937;
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+    small { color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <h1>🔧 Workshop AI</h1>
+  <p>Offline-Fahrzeugdatenbank</p>
+
+  <select id="hersteller">
+    <option>BMW</option>
+  </select>
+
+  <input id="suche"
+         placeholder="Modell oder Motor suchen">
+
+  <button onclick="suchen()">Fahrzeug suchen</button>
+
+  <div id="ergebnis"></div>
+
+  <script>
+    const fahrzeuge = [
+      {
+        marke: "BMW",
+        modell: "320d Touring",
+        baureihe: "E91",
+        baujahr: "2007",
+        motor: "M47D20TÜ2",
+        leistung: "163 PS"
+      }
+    ];
+
+    function suchen() {
+      const text = document
+        .getElementById("suche")
+        .value.toLowerCase();
+
+      const treffer = fahrzeuge.filter(auto =>
+        Object.values(auto).some(wert =>
+          wert.toLowerCase().includes(text)
+        )
+      );
+
+      const ziel = document.getElementById("ergebnis");
+      ziel.replaceChildren();
+
+      if (!treffer.length) {
+        ziel.textContent = "Kein Fahrzeug gefunden.";
+        return;
+      }
+
+      treffer.forEach(auto => {
+        const karte = document.createElement("div");
+        karte.className = "card";
+
+        const titel = document.createElement("h2");
+        titel.textContent = auto.marke + " " + auto.modell;
+
+        const details = document.createElement("p");
+        details.textContent =
+          auto.baureihe + " · " + auto.baujahr +
+          " · " + auto.motor + " · " + auto.leistung;
+
+        karte.append(titel, details);
+        ziel.append(karte);
+      });
+    }
+
+    suchen();
+  </script>
+</body>
+</html>
