@@ -20,3 +20,4 @@ window.WORKSHOP_VEHICLES = [
 {brand:'BMW',series:'G20/G21',model:'320d',years:'ab 2019',engine:'B47 (Varianten)',power:'190 PS'},
 {brand:'BMW',series:'G30/G31',model:'520d',years:'2017–2024',engine:'B47 (Varianten)',power:'190 PS'}
 ];
+
