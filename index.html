@@ -7,6 +7,19 @@
         content="width=device-width, initial-scale=1">
   <title>Workshop AI</title>
   <style>
+    
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(error =>
+          console.error("Offline-Cache:", error)
+        );
+    });
+  }
+</script>
+
     body {
       background: #111827;
       color: white;
