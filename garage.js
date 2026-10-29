@@ -20,6 +20,24 @@ for(const s of entries){const item=el('article','','card');item.append(el('h3',`
 const details=el('details');details.append(el('summary','+ Service / Reparatur eintragen'));const form=el('form');form.innerHTML=`<label>Datum *</label><input name="date" type="date" required><label>Kilometerstand</label><input name="mileage" type="number" min="0" max="9999999"><label>Art</label><select name="type"><option>Inspektion</option><option>Ölwechsel</option><option>Bremsen</option><option>Reparatur</option><option>Reifen</option><option>HU/AU</option><option>Sonstiges</option></select><label>Durchgeführte Arbeiten *</label><textarea name="work" required maxlength="3000" placeholder="z. B. Öl und Filter gewechselt"></textarea><label>Werkstatt / selbst durchgeführt</label><input name="shop" maxlength="150"><label>Kosten (€)</label><input name="cost" type="number" min="0" max="99999999" step="0.01"><label>Notizen / Teile / Belegnummer</label><textarea name="notes" maxlength="5000"></textarea><button type="submit">Serviceeintrag speichern</button>`;form.elements.date.value=new Date().toISOString().slice(0,10);form.onsubmit=e=>{e.preventDefault();const fd=new FormData(form);const s={id:uid(),date:String(fd.get('date')||''),mileage:String(fd.get('mileage')||''),type:String(fd.get('type')||''),work:String(fd.get('work')||'').trim(),shop:String(fd.get('shop')||'').trim(),cost:String(fd.get('cost')||''),notes:String(fd.get('notes')||'').trim()};if(!s.work)return;const prev=c.services.slice();c.services.push(s);if(s.mileage&&Number(s.mileage)>Number(c.mileage||0))c.mileage=s.mileage;if(!save()){c.services=prev;return}render();notice('Serviceeintrag lokal gespeichert.')};details.append(form);root.append(details);if(window.workshopDocsRender)window.workshopDocsRender(c.id,root);else root.dataset.pendingDocs=c.id;}
 function download(){const obj={format:'workshop-ai-garage',version:1,exportedAt:new Date().toISOString(),cars};const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=el('a');a.href=url;a.download='workshop-ai-private-garage.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('#garageExport').onclick=download;$('#garageImport').onclick=()=>$('#garageFile').click();$('#garageFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>10_000_000)throw Error('Maximal 10 MB.');const data=JSON.parse(await file.text());if(data.format!=='workshop-ai-garage'||data.version!==1||!Array.isArray(data.cars)||data.cars.length>2000||!data.cars.every(validCar))throw Error('Ungültige Garage-Sicherung.');if(!confirm('Sicherung importieren? Gleiche Fahrzeug-IDs werden überschrieben.'))return;const old=cars;const map=new Map(cars.map(c=>[c.id,c]));for(const c of data.cars)map.set(c.id,c);cars=[...map.values()];if(!save()){cars=old;return}render();notice('Garage-Sicherung importiert.')}catch(err){notice('Import fehlgeschlagen: '+err.message)}finally{e.target.value=''}};
-function showGarage(yes){$('#garage').hidden=!yes;$('#browse').hidden=yes;$('#detail').style.display='none';$('#navGarage').className=yes?'':'secondary';$('#navDatabase').className=yes?'secondary':'';window.scrollTo(0,0);if(yes)render()}
-$('#navGarage').onclick=()=>showGarage(true);$('#navDatabase').onclick=()=>{showGarage(false);$('#browse').hidden=false};load();
+function navigateTo(section){
+ const home=section==='home', garage=section==='garage', database=section==='database';
+ $('#home').hidden=!home;
+ $('#garage').hidden=!garage;
+ $('#browse').hidden=!database;
+ $('#detail').style.display='none';
+ for(const [id,selected] of [['navHome',home],['navDatabase',database],['navGarage',garage]]){
+   const b=$('#'+id);b.classList.toggle('active',selected);
+   if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+ }
+ window.scrollTo(0,0);
+ if(garage)render();
+}
+window.workshopNavigate=navigateTo;
+$('#navHome').onclick=()=>navigateTo('home');
+$('#navDatabase').onclick=()=>navigateTo('database');
+$('#navGarage').onclick=()=>navigateTo('garage');
+$('#homeDatabase').onclick=()=>navigateTo('database');
+$('#homeGarage').onclick=()=>navigateTo('garage');
+load();
 })();
