@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v12-20261029';
+const CACHE = 'workshop-ai-bmw-v13-neon-20261029';
 
 const FILES = [
   './',
@@ -9,6 +9,7 @@ const FILES = [
   './garage.js',
   './documents.js',
   './manifest.webmanifest',
+  './neon-theme.css',
   './bimmerlink.png',
   './bimmercode.png',
   './thinkdiag.png'
