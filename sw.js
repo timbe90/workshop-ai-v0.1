@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v09-20261029';
+const CACHE = 'workshop-ai-bmw-v11-20261029';
 
 const FILES = [
   './',
@@ -8,7 +8,10 @@ const FILES = [
   './technical-data.js',
   './garage.js',
   './documents.js',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './bimmerlink.png',
+  './bimmercode.png',
+  './thinkdiag.png'
 ];
 
 // Neue Version vollständig zwischenspeichern
