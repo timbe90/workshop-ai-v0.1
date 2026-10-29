@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v17-garage-carousel-20261029';
+const CACHE = 'workshop-ai-bmw-v18-garage-dropdown-20261029';
 
 const FILES = [
   './',
