@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v15-workspace-logos-20261029';
+const CACHE = 'workshop-ai-bmw-v16-license-prototype-20261029';
 
 const FILES = [
   './',
@@ -7,6 +7,7 @@ const FILES = [
   './vehicles.js',
   './technical-data.js',
   './garage.js',
+  './license.js',
   './documents.js',
   './manifest.webmanifest',
   './neon-theme.css',
