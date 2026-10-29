@@ -1,11 +1,12 @@
 
-const CACHE = 'workshop-ai-bmw-v05-20261029';
+const CACHE = 'workshop-ai-bmw-v06-20261029';
 
 const FILES = [
   './',
   './index.html',
   './vehicles.js',
   './technical-data.js',
+  './garage.js',
   './manifest.webmanifest'
 ];
 
