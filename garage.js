@@ -24,6 +24,10 @@ $('#gCancel').onclick=()=>{$('#garageForm').reset();$('#gId').value='';$('#garag
 $('#garageForm').onsubmit=e=>{e.preventDefault();const id=$('#gId').value||uid();const existing=cars.find(c=>c.id===id);if(!existing&&window.workshopLicense&&!window.workshopLicense.canAddCar(cars.length)){notice('Keine freien Fahrzeugplätze. Garage Only benötigt für jedes weitere Fahrzeug eine Erweiterung.');return;}const c={id,make:$('#gMake').value.trim(),model:$('#gModel').value.trim(),year:$('#gYear').value,vin:$('#gVin').value.trim().toUpperCase(),hsn:$('#gHsn').value.trim(),tsn:$('#gTsn').value.trim().toUpperCase(),plate:$('#gPlate').value.trim(),engine:$('#gEngine').value.trim(),mileage:$('#gMileage').value,services:existing?.services||[]};if(c.vin&& !/^[A-HJ-NPR-Z0-9]{17}$/.test(c.vin)){notice('FIN/VIN muss 17 gültige Zeichen haben (ohne I, O oder Q).');return}if(!c.make||!c.model)return;const old=cars.slice();cars=existing?cars.map(x=>x.id===id?c:x):[...cars,c];if(!save()){cars=old;return}selected=id;$('#garageForm').reset();$('#gId').value='';$('#garageEditor').open=false;render();notice('Fahrzeug lokal gespeichert.')};
 function renderDetails(){const root=$('#garageVehicle');root.replaceChildren();const c=cars.find(x=>x.id===selected);if(!c)return;
  const buttons=el('div','','garageActionGrid');for(const [key,label] of [['Daten','Daten'],['Scheckheft','Scheckheft'],['Fahrzeugschein','Fahrzeugschein'],['HU/AU','HU/AU'],['ABE','ABE / Teilegutachten']]){const btn=el('button',label,'garageAction'+(activePane===key?' active':''));btn.type='button';btn.setAttribute('aria-pressed',String(activePane===key));btn.onclick=()=>{activePane=key;renderDetails()};buttons.append(btn)}root.append(buttons);
+ const dbLink=el('button','Fahrzeugdatenbank öffnen ↗','secondary garageDatabaseLink');
+ dbLink.type='button';
+ dbLink.onclick=()=>{if(window.workshopOpenGarageVehicle)window.workshopOpenGarageVehicle({...c});else notice('Fahrzeugdatenbank ist noch nicht bereit.')};
+ root.append(dbLink);
  const panel=el('section','','garageDetailPanel');root.append(panel);
  if(activePane==='Daten'){
  const card=el('details','','card garageDataDropdown');const summary=el('summary',`${c.make} ${c.model}`,'garageDataSummary');card.append(summary);const inner=el('div','','garageDataInner');for(const [name,value] of [['Baujahr',c.year],['FIN/VIN',c.vin],['HSN',c.hsn],['TSN',c.tsn],['Kennzeichen',c.plate],['Motor',c.engine],['Kilometerstand',c.mileage?`${c.mileage} km`:'']])if(value)inner.append(el('p',`${name}: ${value}`));
@@ -45,27 +49,27 @@ const details=el('details');details.append(el('summary','+ Service / Reparatur e
 function download(){const obj={format:'workshop-ai-garage',version:1,exportedAt:new Date().toISOString(),cars};const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=el('a');a.href=url;a.download='workshop-ai-private-garage.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('#garageExport').onclick=download;$('#garageImport').onclick=()=>$('#garageFile').click();$('#garageFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>10_000_000)throw Error('Maximal 10 MB.');const data=JSON.parse(await file.text());if(data.format!=='workshop-ai-garage'||data.version!==1||!Array.isArray(data.cars)||data.cars.length>2000||!data.cars.every(validCar))throw Error('Ungültige Garage-Sicherung.');const mergedCount=new Set([...cars.map(c=>c.id),...data.cars.map(c=>c.id)]).size;if(window.workshopLicense&&!window.workshopLicense.canAddCar(mergedCount-1))throw Error('Import überschreitet die freigeschalteten Fahrzeugplätze. Daten wurden nicht verändert.');if(!confirm('Sicherung importieren? Gleiche Fahrzeug-IDs werden überschrieben.'))return;const old=cars;const map=new Map(cars.map(c=>[c.id,c]));for(const c of data.cars)map.set(c.id,c);cars=[...map.values()];if(!save()){cars=old;return}render();notice('Garage-Sicherung importiert.')}catch(err){notice('Import fehlgeschlagen: '+err.message)}finally{e.target.value=''}};
 function navigateTo(section){
- if(window.workshopLicense&&!window.workshopLicense.can(section)){notice('Dieser Bereich ist mit der Test-Lizenz nicht freigeschaltet.');section='account'}
+ if(window.workshopLicense&&!window.workshopLicense.can(section)&&!(section==='database'&&window.workshopGarageDatabaseContext)){notice('Dieser Bereich ist mit der Test-Lizenz nicht freigeschaltet.');section='account'}
  for(const id of ['home','workshop','account','garage','browse'])$('#'+id).hidden=true;
  $('#detail').style.display='none';
  const target={home:'home',workshop:'workshop',account:'account',garage:'garage',database:'browse'}[section]||'home';
  $('#'+target).hidden=false;
  for(const [id,selected] of [['navWorkshop',section==='workshop'],['navHome',section==='home'],['navDatabase',section==='database'],['navGarage',section==='garage'],['navAccount',section==='account']]){
    const b=$('#'+id);b.classList.toggle('active',selected);
-   if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+   b.hidden=selected;if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
  }
  window.scrollTo(0,0);
- if(section==='garage')render();
+ if(section==='garage'){window.workshopGarageDatabaseContext=null;render()} if(section==='database'&&!window.workshopGarageDatabaseContext&&window.workshopDatabaseClearContext)window.workshopDatabaseClearContext();
 }
 window.workshopNavigate=navigateTo;window.workshopGarageRefresh=render;
 $('#navHome').onclick=()=>navigateTo('home');
 $('#navWorkshop').onclick=()=>navigateTo('workshop');
 $('#navAccount').onclick=()=>navigateTo('account');
-$('#navDatabase').onclick=()=>navigateTo('database');
+$('#navDatabase').onclick=()=>{window.workshopGarageDatabaseContext=null;navigateTo('database')};
 $('#navGarage').onclick=()=>navigateTo('garage');
 $('#launchWorkshop').onclick=()=>navigateTo('workshop');
 $('#launchAccount').onclick=()=>navigateTo('account');
-$('#homeDatabase').onclick=()=>navigateTo('database');
+$('#homeDatabase').onclick=()=>{window.workshopGarageDatabaseContext=null;navigateTo('database')};
 $('#homeGarage').onclick=()=>navigateTo('garage');
 const START_KEY='workshop-ai-start-mode-v1';
 const startup=$('#startupMode');

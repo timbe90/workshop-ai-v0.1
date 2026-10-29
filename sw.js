@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v19-dual-mode-20261029';
+const CACHE = 'workshop-ai-bmw-v20-garage-db-20261029';
 
 const FILES = [
   './',
