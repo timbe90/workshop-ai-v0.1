@@ -50,16 +50,16 @@ function download(){const obj={format:'workshop-ai-garage',version:1,exportedAt:
 $('#garageExport').onclick=download;$('#garageImport').onclick=()=>$('#garageFile').click();$('#garageFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>10_000_000)throw Error('Maximal 10 MB.');const data=JSON.parse(await file.text());if(data.format!=='workshop-ai-garage'||data.version!==1||!Array.isArray(data.cars)||data.cars.length>2000||!data.cars.every(validCar))throw Error('Ungültige Garage-Sicherung.');const mergedCount=new Set([...cars.map(c=>c.id),...data.cars.map(c=>c.id)]).size;if(window.workshopLicense&&!window.workshopLicense.canAddCar(mergedCount-1))throw Error('Import überschreitet die freigeschalteten Fahrzeugplätze. Daten wurden nicht verändert.');if(!confirm('Sicherung importieren? Gleiche Fahrzeug-IDs werden überschrieben.'))return;const old=cars;const map=new Map(cars.map(c=>[c.id,c]));for(const c of data.cars)map.set(c.id,c);cars=[...map.values()];if(!save()){cars=old;return}render();notice('Garage-Sicherung importiert.')}catch(err){notice('Import fehlgeschlagen: '+err.message)}finally{e.target.value=''}};
 function navigateTo(section){
  if(window.workshopLicense&&!window.workshopLicense.can(section)&&!(section==='database'&&window.workshopGarageDatabaseContext)){notice('Dieser Bereich ist mit der Test-Lizenz nicht freigeschaltet.');section='account'}
- for(const id of ['home','workshop','account','garage','browse'])$('#'+id).hidden=true;
+ for(const id of ['home','workshop','account','garage','browse','smart'])$('#'+id).hidden=true;
  $('#detail').style.display='none';
- const target={home:'home',workshop:'workshop',account:'account',garage:'garage',database:'browse'}[section]||'home';
+ const target={home:'home',workshop:'workshop',account:'account',garage:'garage',database:'browse',smart:'smart'}[section]||'home';
  $('#'+target).hidden=false;
- for(const [id,selected] of [['navWorkshop',section==='workshop'],['navHome',section==='home'],['navDatabase',section==='database'],['navGarage',section==='garage'],['navAccount',section==='account']]){
+ for(const [id,selected] of [['navWorkshop',section==='workshop'],['navHome',section==='home'],['navDatabase',section==='database'],['navGarage',section==='garage'],['navSmart',section==='smart'],['navAccount',section==='account']]){
    const b=$('#'+id);b.classList.toggle('active',selected);
    b.hidden=selected;if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
  }
  window.scrollTo(0,0);
- if(section==='garage'){window.workshopGarageDatabaseContext=null;render()} if(section==='database'&&!window.workshopGarageDatabaseContext&&window.workshopDatabaseClearContext)window.workshopDatabaseClearContext();
+ if(section==='smart'&&window.workshopSmartRefresh)window.workshopSmartRefresh();if(section==='garage'){window.workshopGarageDatabaseContext=null;render()} if(section==='database'&&!window.workshopGarageDatabaseContext&&window.workshopDatabaseClearContext)window.workshopDatabaseClearContext();
 }
 window.workshopNavigate=navigateTo;window.workshopGarageRefresh=render;
 $('#navHome').onclick=()=>navigateTo('home');
@@ -67,6 +67,8 @@ $('#navWorkshop').onclick=()=>navigateTo('workshop');
 $('#navAccount').onclick=()=>navigateTo('account');
 $('#navDatabase').onclick=()=>{window.workshopGarageDatabaseContext=null;navigateTo('database')};
 $('#navGarage').onclick=()=>navigateTo('garage');
+$('#navSmart').onclick=()=>navigateTo('smart');
+$('#homeSmart').onclick=()=>navigateTo('smart');
 $('#launchWorkshop').onclick=()=>navigateTo('workshop');
 $('#launchAccount').onclick=()=>navigateTo('account');
 $('#homeDatabase').onclick=()=>{window.workshopGarageDatabaseContext=null;navigateTo('database')};

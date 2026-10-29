@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v20-garage-db-20261029';
+const CACHE = 'workshop-ai-bmw-v21-smart-diagnose-20261029';
 
 const FILES = [
   './',
@@ -7,6 +7,7 @@ const FILES = [
   './vehicles.js',
   './technical-data.js',
   './garage.js',
+  './smart-diagnose.js',
   './license.js',
   './documents.js',
   './manifest.webmanifest',
