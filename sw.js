@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v11-20261029';
+const CACHE = 'workshop-ai-bmw-v12-20261029';
 
 const FILES = [
   './',
