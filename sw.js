@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v18-garage-dropdown-20261029';
+const CACHE = 'workshop-ai-bmw-v19-dual-mode-20261029';
 
 const FILES = [
   './',
@@ -15,7 +15,9 @@ const FILES = [
   './bimmercode.png',
   './thinkdiag.png',
   './fahrzeugdatenbank.png',
-  './garage.png'
+  './garage.png',
+  './workshop-loader.png',
+  './kontoverwaltung.png'
 ];
 
 // Neue Version vollständig zwischenspeichern

@@ -45,23 +45,32 @@ const details=el('details');details.append(el('summary','+ Service / Reparatur e
 function download(){const obj={format:'workshop-ai-garage',version:1,exportedAt:new Date().toISOString(),cars};const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=el('a');a.href=url;a.download='workshop-ai-private-garage.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('#garageExport').onclick=download;$('#garageImport').onclick=()=>$('#garageFile').click();$('#garageFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>10_000_000)throw Error('Maximal 10 MB.');const data=JSON.parse(await file.text());if(data.format!=='workshop-ai-garage'||data.version!==1||!Array.isArray(data.cars)||data.cars.length>2000||!data.cars.every(validCar))throw Error('Ungültige Garage-Sicherung.');const mergedCount=new Set([...cars.map(c=>c.id),...data.cars.map(c=>c.id)]).size;if(window.workshopLicense&&!window.workshopLicense.canAddCar(mergedCount-1))throw Error('Import überschreitet die freigeschalteten Fahrzeugplätze. Daten wurden nicht verändert.');if(!confirm('Sicherung importieren? Gleiche Fahrzeug-IDs werden überschrieben.'))return;const old=cars;const map=new Map(cars.map(c=>[c.id,c]));for(const c of data.cars)map.set(c.id,c);cars=[...map.values()];if(!save()){cars=old;return}render();notice('Garage-Sicherung importiert.')}catch(err){notice('Import fehlgeschlagen: '+err.message)}finally{e.target.value=''}};
 function navigateTo(section){
- if(window.workshopLicense&&!window.workshopLicense.can(section)){notice('Dieser Bereich ist mit der Test-Lizenz nicht freigeschaltet.');section='home'}const home=section==='home', garage=section==='garage', database=section==='database';
- $('#home').hidden=!home;
- $('#garage').hidden=!garage;
- $('#browse').hidden=!database;
+ if(window.workshopLicense&&!window.workshopLicense.can(section)){notice('Dieser Bereich ist mit der Test-Lizenz nicht freigeschaltet.');section='account'}
+ for(const id of ['home','workshop','account','garage','browse'])$('#'+id).hidden=true;
  $('#detail').style.display='none';
- for(const [id,selected] of [['navHome',home],['navDatabase',database],['navGarage',garage]]){
+ const target={home:'home',workshop:'workshop',account:'account',garage:'garage',database:'browse'}[section]||'home';
+ $('#'+target).hidden=false;
+ for(const [id,selected] of [['navWorkshop',section==='workshop'],['navHome',section==='home'],['navDatabase',section==='database'],['navGarage',section==='garage'],['navAccount',section==='account']]){
    const b=$('#'+id);b.classList.toggle('active',selected);
    if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
  }
  window.scrollTo(0,0);
- if(garage)render();
+ if(section==='garage')render();
 }
 window.workshopNavigate=navigateTo;window.workshopGarageRefresh=render;
 $('#navHome').onclick=()=>navigateTo('home');
+$('#navWorkshop').onclick=()=>navigateTo('workshop');
+$('#navAccount').onclick=()=>navigateTo('account');
 $('#navDatabase').onclick=()=>navigateTo('database');
 $('#navGarage').onclick=()=>navigateTo('garage');
+$('#launchWorkshop').onclick=()=>navigateTo('workshop');
+$('#launchAccount').onclick=()=>navigateTo('account');
 $('#homeDatabase').onclick=()=>navigateTo('database');
 $('#homeGarage').onclick=()=>navigateTo('garage');
+const START_KEY='workshop-ai-start-mode-v1';
+const startup=$('#startupMode');
+try{startup.value=['home','workshop','account'].includes(localStorage.getItem(START_KEY))?localStorage.getItem(START_KEY):'home'}catch{}
+startup.onchange=()=>{try{localStorage.setItem(START_KEY,startup.value)}catch{}};
+navigateTo(startup.value);
 load();
 })();
