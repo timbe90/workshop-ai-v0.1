@@ -1,5 +1,5 @@
 
-const CACHE = 'workshop-ai-bmw-v13-neon-20261029';
+const CACHE = 'workshop-ai-bmw-v15-workspace-logos-20261029';
 
 const FILES = [
   './',
@@ -12,7 +12,9 @@ const FILES = [
   './neon-theme.css',
   './bimmerlink.png',
   './bimmercode.png',
-  './thinkdiag.png'
+  './thinkdiag.png',
+  './fahrzeugdatenbank.png',
+  './garage.png'
 ];
 
 // Neue Version vollständig zwischenspeichern

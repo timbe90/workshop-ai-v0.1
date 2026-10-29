@@ -15,3 +15,20 @@ input,select,textarea,#garage textarea{background:#0b1928;color:#f3f8ff;border:1
 @media(min-width:600px){main{padding-top:30px}.hero{padding:38px 34px}#diagnoseTools .toolLogo{width:115px}.brandHeader{margin-bottom:28px}}
 @media(max-width:360px){#diagnoseTools .toolLink{min-height:135px;font-size:11px}#diagnoseTools .toolLogo{width:76px}#home .homeTile{padding:13px}#bottomNav button{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Fahrzeugdokumente — v1.4 */
+#docManager{margin-top:24px;padding:18px;border:1px solid #23516f;border-radius:18px;background:linear-gradient(145deg,#0c1d30,#090f1c);box-shadow:0 0 22px #008dff13}
+#docManager h2{color:#ecf7ff}#docManager>p{color:#a3bbce;font-size:13px}
+.docTabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:16px 0}
+.docTabs .docTab{min-width:0;padding:12px 5px;font-size:clamp(10px,2.7vw,13px);line-height:1.25;background:#14283a;border:1px solid #2a536c;border-radius:11px;color:#b6d2e5;box-shadow:none}
+.docTabs .docTab.active{color:white;border-color:#22b8ff;background:linear-gradient(130deg,#0875a9,#164a81);box-shadow:0 0 15px #06baff3a}
+.docUpload{padding:14px;border:1px solid #25475e;border-radius:13px;background:#0a1727}.docUpload input,.docUpload select{width:100%;box-sizing:border-box}
+#docManager .docRow{display:flex;flex-direction:column;gap:10px;padding:13px 0;border-bottom:1px solid #25435a;overflow-wrap:anywhere}
+#docManager .docRow small{display:block;color:#8baac0;margin-top:4px}.docActions{display:flex;flex-wrap:wrap;gap:7px}.docActions button{padding:9px 11px;font-size:12px}
+
+/* Workspace image logos — v1.5 */
+#home .homeTile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:220px;text-align:center;padding:13px 10px}
+#home .homeTile .workspaceLogo{display:block;width:min(100%,160px);height:auto;aspect-ratio:1;object-fit:contain;border-radius:18px;filter:drop-shadow(0 0 11px #00aaff30)}
+#home .homeTile>span:last-child{display:block;font-size:14px;line-height:1.25;font-weight:800}
+#home .homeTile>span:last-child small{display:block;font-size:9px;letter-spacing:.5px;margin-top:6px}
+@media(max-width:390px){#home .homeTile{min-height:192px}#home .homeTile .workspaceLogo{width:min(100%,132px)}}
